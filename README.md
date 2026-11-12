@@ -7,7 +7,7 @@
 | `danmaku-core` | `crates/danmaku-core` | 平台无关的弹幕事件模型与 Bilibili 协议解析 |
 | `@danmaku-core/ui` | `packages/ui` | React 弹幕展示与组件样式的包骨架 |
 
-Rust 包已从 BiliDanmu 抽取事件模型、Bilibili 二进制协议与命令解析，客户端已通过本地依赖接入。React 包已建立库入口、类型声明及样式导出，展示组件待后续抽取。
+Rust 包已从 BiliDanmu 抽取事件模型、Bilibili 二进制协议与命令解析，客户端已通过固定 Git 修订接入。React 包已建立库入口、类型声明及样式导出，展示组件待后续抽取。
 
 ## 目录
 
