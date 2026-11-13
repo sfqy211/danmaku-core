@@ -4,6 +4,8 @@
 
 `crates/danmaku-core/src/message.rs`、`protocol.rs` 与相关测试从 sfqy211 维护的 BiliDanmu 抽取，保留原有字段、解析行为和来源注释。根目录 `LICENSE` 原样保留其 GNU Affero General Public License v3.0 全文。
 
+`packages/ui` 的弹幕条目、表情正文、粉丝牌、金额及显示规则同样从 BiliDanmu 抽取，图片、设置与桌面操作通过参数解耦。前端包构建产物携带该许可全文。
+
 [BiliDanmu](https://github.com/sfqy211/bilidanmu)
 
 ## JLiverTool

@@ -1,1 +1,344 @@
-/* 公共组件的样式入口，组件抽取后在此组织局部样式。 */
+/* 所有规则限定在公共组件的类名内，调用方通过成对变量覆盖明暗配色。 */
+.danmaku-message,
+.danmaku-context-menu {
+  --dm-text: var(--danmaku-text-light, #1d1d1f);
+  --dm-entry-text: var(--danmaku-entry-text-light, #64748b);
+  --dm-muted: var(--danmaku-muted-light, #94a3b8);
+  --dm-count: var(--danmaku-count-light, #64748b);
+  --dm-governor: var(--danmaku-governor-light, #f77102);
+  --dm-admiral: var(--danmaku-admiral-light, #aa3cdd);
+  --dm-captain: var(--danmaku-captain-light, #006fe6);
+  --dm-admin-text: var(--danmaku-admin-text-light, #d97706);
+  --dm-admin-border: var(--danmaku-admin-border-light, #f59e0b);
+  --dm-live: var(--danmaku-live-light, #f43f5e);
+  --dm-menu-bg: var(--danmaku-menu-bg-light, #ffffff);
+  --dm-menu-text: var(--danmaku-menu-text-light, #334155);
+  --dm-menu-border: var(--danmaku-menu-border-light, #e2e8f0);
+  --dm-menu-hover: var(--danmaku-menu-hover-light, #f1f5f9);
+  --dm-chip-weight: 100%;
+  --dm-chip-text: #ffffff;
+  --dm-accent-weight: 100%;
+  box-sizing: border-box;
+  color: var(--dm-text);
+  font-family: inherit;
+}
+
+:where(.dark) .danmaku-message:not([data-theme="light"]),
+:where(.dark) .danmaku-context-menu:not([data-theme="light"]),
+.danmaku-message[data-theme="dark"],
+.danmaku-context-menu[data-theme="dark"] {
+  --dm-text: var(--danmaku-text-dark, #ffffff);
+  --dm-entry-text: var(--danmaku-entry-text-dark, #cbd5e1);
+  --dm-muted: var(--danmaku-muted-dark, #64748b);
+  --dm-count: var(--danmaku-count-dark, #94a3b8);
+  --dm-governor: var(--danmaku-governor-dark, #febf8b);
+  --dm-admiral: var(--danmaku-admiral-dark, #ca86ea);
+  --dm-captain: var(--danmaku-captain-dark, #80bdff);
+  --dm-admin-text: var(--danmaku-admin-text-dark, #fcd34d);
+  --dm-admin-border: var(--danmaku-admin-border-dark, #fbbf24);
+  --dm-live: var(--danmaku-live-dark, #fb7185);
+  --dm-menu-bg: var(--danmaku-menu-bg-dark, #12141e);
+  --dm-menu-text: var(--danmaku-menu-text-dark, #e2e8f0);
+  --dm-menu-border: var(--danmaku-menu-border-dark, rgb(255 255 255 / 0.06));
+  --dm-menu-hover: var(--danmaku-menu-hover-dark, rgb(255 255 255 / 0.04));
+  --dm-chip-weight: 78%;
+  --dm-chip-text: #10131a;
+  --dm-accent-weight: 55%;
+}
+
+.danmaku-message {
+  margin-bottom: 8px;
+  line-height: 24px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.danmaku-message-content {
+  pointer-events: auto;
+}
+
+.danmaku-message-content:focus-visible,
+.danmaku-context-action:focus-visible {
+  outline: 2px solid var(--danmaku-focus-ring, #427d9a);
+  outline-offset: 2px;
+}
+
+.danmaku-system-message {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.danmaku-system-live {
+  color: var(--dm-live);
+}
+
+.danmaku-system-muted,
+.danmaku-reply {
+  color: var(--dm-muted);
+}
+
+.danmaku-body {
+  overflow-wrap: break-word;
+  color: var(--dm-text);
+}
+
+.danmaku-body-entry {
+  color: var(--dm-entry-text);
+}
+
+.danmaku-username {
+  margin-right: 4px;
+  font-weight: 700;
+}
+
+.danmaku-username-default {
+  color: var(--dm-text);
+}
+
+.danmaku-username-plain {
+  color: var(--ink, var(--dm-text));
+}
+
+.danmaku-username-governor {
+  color: var(--dm-governor);
+}
+
+.danmaku-username-admiral {
+  color: var(--dm-admiral);
+}
+
+.danmaku-username-captain {
+  color: var(--dm-captain);
+}
+
+.danmaku-contribution-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 4px;
+  border-radius: 2px;
+  vertical-align: middle;
+  color: #ffffff;
+  font-weight: 700;
+  background-image: linear-gradient(to right, #ea580c, #c2410c);
+}
+
+.danmaku-contribution-rank-1 {
+  background-image: linear-gradient(to right, #facc15, #f59e0b);
+}
+
+.danmaku-contribution-rank-2 {
+  background-image: linear-gradient(to right, #cbd5e1, #94a3b8);
+}
+
+.danmaku-admin-badge {
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  border: 1px solid var(--dm-admin-border);
+  border-radius: 50%;
+  color: var(--dm-admin-text);
+  vertical-align: middle;
+}
+
+.danmaku-wealth-image {
+  display: inline-block;
+  width: auto;
+  max-width: 100%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.danmaku-inline-emot {
+  display: inline-block;
+  max-width: 100%;
+  margin-left: 0.125rem;
+  margin-right: 0.125rem;
+  vertical-align: middle;
+}
+
+.danmaku-medal-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.375rem;
+  border-radius: 0.25rem;
+  line-height: 1.25;
+}
+
+.danmaku-medal-level {
+  margin-left: 0.125rem;
+  font-weight: 700;
+}
+
+.danmaku-price-chip {
+  display: inline-block;
+  margin-right: 4px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background-color: var(--sc-accent, #2a60b2);
+  background-color: color-mix(
+    in srgb,
+    var(--sc-accent, #2a60b2) var(--dm-chip-weight),
+    #ffffff
+  );
+  color: var(--dm-chip-text);
+  font-size: 0.79em;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.danmaku-plain-price {
+  margin-right: 4px;
+  color: var(--dm-text);
+  font-weight: 600;
+}
+
+.danmaku-accent-text {
+  color: var(--sc-accent, #2a60b2);
+  color: color-mix(
+    in srgb,
+    var(--sc-accent, #2a60b2) var(--dm-accent-weight),
+    #ffffff
+  );
+}
+
+.danmaku-translation {
+  opacity: 0.62;
+}
+
+.danmaku-message-bubble {
+  display: block;
+  padding: 2px 8px;
+  border: 1px solid var(--bubble-border, transparent);
+  border-radius: 6px;
+  background-image: linear-gradient(
+    90deg,
+    var(--bubble-start) 0%,
+    var(--bubble-end) 100%
+  );
+}
+
+.danmaku-entry-mark {
+  margin-right: 4px;
+  color: #94a3b8;
+}
+
+.danmaku-reply {
+  margin-right: 4px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.danmaku-big-emoticon {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.danmaku-big-emoticon-image {
+  display: block;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.danmaku-gift-name {
+  font-weight: 500;
+}
+
+.danmaku-gift-count {
+  color: var(--dm-count);
+}
+
+.danmaku-context-menu {
+  position: fixed;
+  z-index: 50;
+  width: max-content;
+  min-width: 140px;
+  max-width: calc(100% - 16px);
+  overflow: hidden;
+  padding: 4px 0;
+  border: 1px solid var(--dm-menu-border);
+  border-radius: 6px;
+  background: var(--dm-menu-bg);
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  font-size: 12px;
+  line-height: 16px;
+  pointer-events: auto;
+  transition-property: none;
+}
+
+.danmaku-context-action {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--dm-menu-text);
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  text-transform: none;
+  cursor: pointer;
+  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.danmaku-context-action[hidden] {
+  display: none;
+}
+
+.danmaku-context-action:hover,
+.danmaku-context-action:focus-visible {
+  background: var(--dm-menu-hover);
+}
+
+.danmaku-context-icon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: #94a3b8;
+}
+
+.danmaku-context-label {
+  overflow-wrap: anywhere;
+}
+
+.danmaku-context-divider {
+  margin: 4px 0;
+  border-top: 1px solid var(--dm-menu-border);
+}
+
+.danmaku-context-time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  color: var(--dm-muted);
+}
+
+.danmaku-context-time .danmaku-context-icon {
+  color: inherit;
+}
+
+.danmaku-time-value {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .danmaku-context-action {
+    transition: none;
+  }
+}

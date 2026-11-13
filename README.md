@@ -5,9 +5,9 @@
 | 包 | 路径 | 职责 |
 | --- | --- | --- |
 | `danmaku-core` | `crates/danmaku-core` | 平台无关的弹幕事件模型与 Bilibili 协议解析 |
-| `@danmaku-core/ui` | `packages/ui` | React 弹幕展示与组件样式的包骨架 |
+| `@danmaku-core/ui` | `packages/ui` | React 弹幕条目、表情正文、粉丝牌、金额与配色规则 |
 
-Rust 包已从 BiliDanmu 抽取事件模型、Bilibili 二进制协议与命令解析，客户端已通过固定 Git 修订接入。React 包已建立库入口、类型声明及样式导出，展示组件待后续抽取。
+Rust 包已从 BiliDanmu 抽取事件模型、Bilibili 二进制协议与命令解析，客户端通过固定 Git 修订接入。React 包已抽取弹幕展示组件、显示规则与独立样式，客户端通过同级目录的本地包接入。
 
 ## 目录
 
@@ -27,6 +27,13 @@ danmaku-core/
 │   ├── scripts/copy-styles.mjs
 │   └── src/
 │       ├── index.ts
+│       ├── DanmakuMessageItem.tsx
+│       ├── InlineEmotText.tsx
+│       ├── MedalBadge.tsx
+│       ├── types.ts
+│       ├── price-chip.ts
+│       ├── display.ts
+│       ├── image.tsx
 │       └── styles.css
 ├── Cargo.toml
 ├── Cargo.lock
@@ -42,12 +49,13 @@ danmaku-core/
 npm ci
 npm run typecheck
 npm run build
+npm test
 cargo check --workspace --locked
 cargo build --workspace --locked
 cargo test --workspace --locked
 ```
 
-前端构建输出为 `packages/ui/dist/index.js`、`index.d.ts` 和 `styles.css`。包使用 ESM，React 19 作为 peer dependency，由调用方提供。Rust 构建输出位于根目录 `target/`。
+前端构建输出位于 `packages/ui/dist/`，包含 JS、类型声明、独立 CSS 与许可文本。包使用 ESM，React 19 与 React DOM 19 作为 peer dependency，由调用方提供。`npm test` 使用 Node 内置测试运行器验证金额、配色、表情、图片适配和条目显示契约。Rust 构建输出位于根目录 `target/`。
 
 ```sh
 npm pack --workspace @danmaku-core/ui --dry-run
@@ -85,7 +93,7 @@ cargo check `
 
 ### React 包
 
-先在公共仓库完成 `npm ci` 和 `npm run build`，再在 React 应用目录安装前端包。
+先从本公共仓库检出调用方固定的源码修订，完成 `npm ci` 和 `npm run build`，再在 React 应用目录安装前端包。
 
 ```sh
 npm install D:/AHEU/code/danmaku-core/packages/ui
@@ -98,13 +106,32 @@ import "@danmaku-core/ui";
 import "@danmaku-core/ui/styles.css";
 ```
 
-当前入口可解析，具体组件导出会随实际抽取加入。样式通过独立子路径显式导入。
+公共 API 包括以下组件和规则。
+
+- `DanmakuMessageItem` 展示普通弹幕、纯表情、礼物、SC、舰长、活动及开播/下播标记。
+- `InlineEmotText` 与 `isEmoticonOnlyContent` 保留最长表情 token 优先、原始图片尺寸以及 image/text/hidden 三种展示模式。
+- `MedalBadge` 保留七档等级色、未点亮状态与字号缩放。
+- `DanmakuMessage`、`Medal`、`InlineEmoticon`、`BigEmoticonOptions`、`PriceColors` 等类型保留客户端现有字段。
+- `formatMessagePrice`、`resolveMessageAccent`、`normalizePriceColors`、`DEFAULT_PRICE_COLORS` 和 `PRICE_TIERS` 保留 SC 人民币、礼物/舰长金瓜子单价乘数量以及旧配色补全规则。
+- `formatTimestamp`、`formatDateTime` 和 `parseBubbleColor` 保留本地时间格式与 Android AARRGGBB 到 CSS 颜色的转换。
+
+金额规则可从 `@danmaku-core/ui/price-chip` 单独导入，时间与气泡规则可从 `@danmaku-core/ui/display` 导入，类型可从 `@danmaku-core/ui/types` 导入。
+
+`DanmakuMessageItem` 通过 `appearance` 接收显示配置，字段沿用客户端的 `showMedal`、各项 `hide*`、`emoticonStyle`、`plainPriceMessages` 和 `priceColors`。图片能力通过 `imageComponent` 与 `resolveImageUrl` 注入，`persistent` 仍按原始 URL 的缓存集合判断。默认图片实现使用浏览器 `<img>`。荣耀等级图标沿用 `wealth-level://<level>` 标识，宿主通过图片组件或 URL 解析回调映射到自己的资源。
+
+`onMention`、`onBlockUser`、`onOpenUrl` 和 `onCopy` 将操作交给调用方。屏蔽菜单项在提供 `onBlockUser` 时显示。默认打开链接与复制使用浏览器能力，右键菜单支持键盘打开、方向键导航和 Escape 关闭。
+
+样式通过 `@danmaku-core/ui/styles.css` 显式导入，所有选择器限定在组件类名内。主题默认跟随 `.dark`，也可为条目传入 `theme="light"` 或 `theme="dark"`。调用方可在文档根层设置成对的 `--danmaku-text-light/dark`、`--danmaku-muted-light/dark`、`--danmaku-menu-bg-light/dark` 等变量。隐藏用户等级颜色时，用户名使用宿主 `--ink`，缺省时回退主题正文色。`--sc-accent` 与 `--bubble-*` 继续承接逐条配色。字体由容器继承，`fontSize` 控制文字与标记缩放。
+
+客户端注入原有 `ProxiedImage`、Tauri opener 和屏蔽持久化回调，设置对象与数据库字段保持现有契约。Vite 对 `react` 和 `react-dom` 配置去重，以支持本地链接包。
+
+客户端前端依赖为 `file:../danmaku-core/packages/ui`，typecheck、renderer build 和 renderer dev 入口会先构建共享包。本地和云端都使用同级目录布局，公共源码修订与客户端 Rust 依赖的固定修订保持一致。构建时先安装并构建公共仓库，再安装客户端依赖。文档首页通过客户端价格模块读取默认值，独立构建文档时也需要先准备共享包与客户端依赖，再在 `docs/` 安装依赖并构建。CI 检出两个仓库时，将调用方与 `danmaku-core` 放在 workspace 内的相邻子目录，即可使用同一套相对路径。
 
 ## 后续抽取
 
 Rust 侧后续继续核对网站场次文件契约，处理事件名称、时间戳单位、金额语义与历史文件兼容，再抽取文件解析及通用规则。Tauri 事件、窗口、凭据、网络连接管理和数据库服务由应用层承接。
 
-React 侧从现有弹幕展示中提取受控组件，通过 props 接收数据、配置和操作回调。应用状态、路由、图片代理与桌面能力由调用方接入，公共样式按组件范围组织。
+React 侧后续可继续抽取其他可复用展示模块。应用状态、路由、图片代理与桌面能力由调用方接入，公共样式按组件范围组织。
 
 ## 许可与来源
 
